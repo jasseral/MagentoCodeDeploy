@@ -1,0 +1,5 @@
+#!/bin/bash
+#####
+# Remove last archived version
+#####
+rm -rf /var/www/magento/html.bk

@@ -1,0 +1,11 @@
+#!/bin/bash
+#####
+# Set permissions 
+#####
+chown -R www-data:www-data /var/www/magento
+chmod -R 777 /var/www/magento
+
+#####
+# Link to NFS directories
+#####
+#todo

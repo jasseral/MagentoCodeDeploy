@@ -1,0 +1,45 @@
+version: 0.0
+os: linux
+files:
+  - source: /html
+    destination: /var/www/magento/html
+#  - source: /magento/env.php
+#    destination: /var/www/magento/html/app/etc/
+#  - source: /magento/config.php
+#    destination: /var/www/magento/html/app/etc/
+  - source: /php/php.ini
+    destination: /etc/php/
+  - source: /php/www.conf
+    destination: /etc/php/php-fpm.d/
+  - source: /nginx/nginx.conf
+    destination: /etc/nginx/
+  - source: /nginx/magento.conf
+    destination: /etc/nginx/conf.d/
+  - source: /nginx/app.conf
+    destination: /var/www/magento/
+hooks:
+  BeforeInstall:
+    - location: scripts/configure_server
+      timeout: 300
+      runas: root
+    - location: scripts/configure_nfs
+      timeout: 300
+      runas: root
+    - location: scripts/sync_media
+      timeout: 300
+      runas: root
+    - location: scripts/prepare_install
+      timeout: 300
+      runas: root
+  AfterInstall:
+    - location: scripts/configure_magento
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: scripts/start_application
+      timeout: 300
+      runas: root
+  ApplicationStop:
+    - location: scripts/stop_application
+      timeout: 300
+      runas: root

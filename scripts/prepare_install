@@ -1,0 +1,18 @@
+#!/bin/bash
+#####
+# Move existing code base
+#####
+if [ -d "/var/www/magento/html" ]
+  then
+    mv -f /var/www/magento/html /var/www/magento/html.bk
+  else
+  	echo "Web directory /var/www/magento already installed..";
+fi
+
+#####
+# Prepare to overwrite nginx vhost file (app.conf)
+#####
+if [ -e "/var/www/magento/app.conf" ]
+  then
+    mv -f /var/www/magento/app.conf /var/www/magento/app.conf.bk
+fi

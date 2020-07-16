@@ -1,0 +1,6 @@
+#!/bin/bash
+yum -y update
+yum -y install ruby wget git
+wget https://aws-codedeploy-us-west-2.s3.amazonaws.com/latest/install
+chmod 777 /home/ec2-user/install
+/home/ec2-user/install auto

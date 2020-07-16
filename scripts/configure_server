@@ -1,0 +1,101 @@
+#!/bin/bash
+#####
+# Update existing yum packages
+#####
+yum -y update
+
+#####
+# Install Remi repository
+#####
+if [ ! -e "/root/remi-release-6.rpm" ]
+  then
+    wget -P /root/ http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+    rpm -Uvh /root/remi-release-6*.rpm
+  else
+  	echo "Remi already installed..";
+fi
+
+#####
+# Install SCL Utils
+#####
+if [ ! -e "/root/scl-utils-20120927-11.el6.centos.alt.x86_64.rpm" ]
+  then
+    wget -P /root/ http://ftp.riken.jp/Linux/centos/6/SCL/x86_64/scl-utils/scl-utils-20120927-11.el6.centos.alt.x86_64.rpm
+    rpm -Uvh /root/scl-utils-20120927-11.el6.centos.alt.x86_64.rpm
+  else
+  	echo "SCL utils already installed..";
+fi
+
+#####
+# Install required packages
+#####
+yum -y install nginx mysql varnish git php56-php.x86_64 php56-php-bcmath.x86_64 php56-php-cli.x86_64 php56-php-common.x86_64 php56-php-devel.x86_64 php56-php-fpm.x86_64 php56-php-gd.x86_64 php56-php-intl.x86_64 php56-php-mbstring.x86_64 php56-php-mcrypt.x86_64 php56-php-mysqlnd.x86_64 php56-php-odbc.x86_64 php56-php-opcache.x86_64 php56-php-pdo.x86_64 php56-php-pear.noarch php56-php-pecl-ncurses.x86_64 php56-php-pecl-redis.x86_64 php56-php-soap.x86_64 php56-php-xml.x86_64 php56-php-xmlrpc.x86_64
+
+#####
+# Create symlinks for php-fpm
+#####
+if [ ! -e "/etc/php" ]
+  then
+    ln -s /opt/remi/php56/root/etc /etc/php
+fi
+if [ ! -e "/var/log/php-fpm" ]
+  then
+    ln -s /opt/remi/php56/root/var/log/php-fpm /var/log/php-fpm
+fi
+if [ ! -e "/usr/bin/php" ]
+  then
+    ln -s /usr/bin/php56 /usr/bin/php
+fi
+
+#####
+# Create www-data user
+#####
+#TestId=$(id -u www-data)
+#if [ ! TestId ]
+#  then
+    groupadd www-data
+    useradd -g www-data www-data
+    chown -R www-data:www-data /opt/remi
+    chown -R www-data:www-data /var/log/nginx
+#  else
+#    echo "User www-data alrady exists..";
+#fi
+
+#####
+# Install composer
+#####
+if [ ! -e "/usr/bin/composer" ]
+  then
+    curl -sS https://getcomposer.org/installer | php
+    mv /opt/codedeploy-agent/composer.phar /usr/bin/composer
+  else
+  	echo "Composer alrady installed..";
+fi
+
+#####
+# Prepare for overwrite of php-fpm and nginx files
+#####
+if [ -e "/etc/php/php-fpm.d/www.conf" ]
+  then
+    mv -f /etc/php/php-fpm.d/www.conf /etc/php/php-fpm.d/www.conf.bk
+fi
+if [ -e "/etc/php/php.ini" ]
+  then
+    mv -f /etc/php/php.ini /etc/php/php.ini.bk
+fi
+if [ -e "/etc/nginx/nginx.conf" ]
+  then
+    mv -f /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bk
+fi
+
+#####
+# Create Magento web directory
+#####
+if [ ! -d "/var/www/magento" ]
+  then
+    mkdir -p /var/www/magento
+    chmod -R 777 /var/www/magento
+    chown -R www-data:www-data /var/www/magento
+  else
+  	echo "Web directory /var/www/magento already installed..";
+fi
